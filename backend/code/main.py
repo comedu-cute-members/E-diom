@@ -16,8 +16,9 @@ from collections import Counter
 from datetime import datetime
 from pydub import AudioSegment
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
-token = "dwjnCrLckuzrNoHp-V1Cq1OJYoS970D0VsesgHtJ-sMDMIhcRPC-QsIbKfyjUerK2b6qNg."
+token = "dwjnClsIsgydZO4lR4xG3FI-ZWsLzSOti0H7f837kz3pw3hFTQMleUzvNsIqmIHHxcAlMA."
 bard = Bard(token=token)
 
 # 구글 서비스 계정 인증을 위한 환경변수 설정
@@ -28,6 +29,18 @@ bucket_name = "word_fisher"
 
 # FastAPI 애플리케이션 객체 생성
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 사용자가 업로드한 오디오 파일 저장
 def save_uploaded_file(file: UploadFile, destination: str):
@@ -196,7 +209,7 @@ def question_generation(generation: Gerneration):
     csv_writer = csv.writer(f)
     questions = []
     
-    question_for_Q = f"내가 {answer.expression}라는 표현을 사용해서 대답할 수 있는 영어 질문을 해당 질문이 응답자의 생각을 요구하는 것에 따라 5개의 난이도로 나누어서, 난이도 {answer.level}에 해당하는 질문을 3개 해줘. 이때, 하나의 질문을 출력할 때의 형식은 '질문 번호: 질문' 으로 해줘"
+    question_for_Q = f"내가 {generation.expression}라는 표현을 사용해서 대답할 수 있는 영어 질문을 해당 질문이 응답자의 생각을 요구하는 것에 따라 5개의 난이도로 나누어서, 난이도 {generation.level}에 해당하는 질문을 3개 해줘. 이때, 하나의 질문을 출력할 때의 형식은 '질문 번호: 질문' 으로 해줘"
     answer = bard.get_answer(question_for_Q)['content']
     # answer = "질문 1: Should you learn a new language if you are planning to travel to a foreign country? 질문 2: Should you save money for the future or spend it on experiences? 질문 3: Should you follow your dreams or be practical? 이 질문들은 모두 응답자의 생각을 요구하는 질문으로, 난이도 3에 해당합니다."
 
@@ -205,10 +218,7 @@ def question_generation(generation: Gerneration):
     csv_writer.writerow(questions)
 
     f.close()
-    
-    return JSONResponse(content = {"question1": questions[0],
-                                   "question2": questions[1],
-                                   "question3": questions[2]})
+    return [questions[0], questions[1], questions[2]]
 
 @app.post("/main_question")
 def main_question(main_answer: MainAnswer):

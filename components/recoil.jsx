@@ -21,6 +21,22 @@ export const testSumState = atom({
   default: tree,
 });
 
+export const expressionState = atom({
+  key: "expressionState",
+  default: "",
+});
+
+export const questionState = atom({
+  key: "questionState",
+  default: [
+    "You are going to a job interview. What do you think is the most important thing to do?",
+    "How do you think about living as a leopard?",
+    "How did your parents play with you when you were six years old?",
+    "Who is your favorite sports star, and what is his talent?",
+    "Have you ever solved some questions even though you do not know the exact solving method?",
+  ],
+});
+
 export const testScore = atom({
   key: "testScore",
   default: 18.14,

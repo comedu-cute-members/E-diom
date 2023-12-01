@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FaMicrophone } from "react-icons/fa";
 import { BsSoundwave } from "react-icons/bs";
-import axios from 'axios';
+import axios from "axios";
 
 function AudioRecord(props) {
   const [stream, setStream] = useState();
@@ -10,12 +10,11 @@ function AudioRecord(props) {
   const [source, setSource] = useState();
   const [analyser, setAnalyser] = useState();
   const [audioUrl, setAudioUrl] = useState();
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
 
   const onRecAudio = () => {
+    setDisabled(true);
 
-    setDisabled(true)
-    
     // 음원정보를 담은 노드를 생성하거나 음원을 실행또는 디코딩 시키는 일을 한다
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     // 자바스크립트를 통해 음원의 진행상태에 직접접근에 사용된다.
@@ -38,7 +37,6 @@ function AudioRecord(props) {
       makeSound(stream);
 
       analyser.onaudioprocess = function (e) {
-
         // 3분(180초) 지나면 자동으로 음성 저장 및 녹음 중지
         if (e.playbackTime > 10) {
           stream.getAudioTracks().forEach(function (track) {
@@ -79,45 +77,58 @@ function AudioRecord(props) {
     // 메서드가 호출 된 노드 연결 해제
     analyser.disconnect();
     source.disconnect();
-    
+
     if (audioUrl) {
       URL.createObjectURL(audioUrl); // 출력된 링크에서 녹음된 오디오 확인 가능
     }
 
     const uploadFileToServer = (file, index) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('index', index);
-        if(!isTest){
-            formData.append('express', props.expression);
-        }
-
-        axios.post('localhost:8000/test', formData, {
-            headers:{
-                'Content-Type': 'multipart/form-data',
-            }
-        })
-        .then(response => {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("index", index);
+      if (!props.isTest) {
+        formData.append("express", props.expression);
+        axios
+          .post("localhost:8000/main_question", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
             console.log(response.data.message);
-        })
-        .catch(error => {
-            console.error('전송 중 오류 발생:', error);
-        })
-    }
-    
+          })
+          .catch((error) => {
+            console.error("전송 중 오류 발생:", error);
+          });
+      } else {
+        axios
+          .post("localhost:8000/test", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((response) => {
+            console.log(response.data.message);
+          })
+          .catch((error) => {
+            console.error("전송 중 오류 발생:", error);
+          });
+      }
+    };
+
     // File 생성자를 사용해 파일로 변환
     const sound = new File([audioUrl], `${props.index}.wav`, {
       lastModified: new Date().getTime(),
-      type: "audio/wav",});
+      type: "audio/wav",
+    });
     uploadFileToServer(sound, props.index, props.isTest);
 
-    
     setDisabled(false);
     console.log(sound); // File 정보 출력
   };
 
   // 테스트용
-  const play = () => { 
+  const play = () => {
     const audio = new Audio(URL.createObjectURL(audioUrl)); // 😀😀😀
     audio.loop = false;
     audio.volume = 1;
@@ -125,20 +136,15 @@ function AudioRecord(props) {
   };
 
   let content = null;
-  if(!disabled){
-    content = <FaMicrophone size={24}/>
-  }
-  else{
-    content = <BsSoundwave size={24}/>
+  if (!disabled) {
+    content = <FaMicrophone size={24} />;
+  } else {
+    content = <BsSoundwave size={24} />;
   }
 
   return (
     <>
-      <button onClick={onRec ? onRecAudio : offRecAudio}>
-        {content}
-      </button>
-      <p></p>
-      {/* <button onClick={play} disabled={disabled}>재생</button> */}
+      <button onClick={onRec ? onRecAudio : offRecAudio}>{content}</button>
     </>
   );
 }

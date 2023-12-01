@@ -1,10 +1,43 @@
 "use client";
 
-import { Button, Link, Input } from "@nextui-org/react";
-import Navigation from "../../components/navigation";
+import { Button, Input } from "@nextui-org/react";
+import Navigation from "@/components/navigation";
 import { motion } from "framer-motion";
+import { testScore, expressionState, questionState } from "@/components/recoil";
+import { useState } from "react";
+import { useRecoilState } from "recoil";
+import { useRouter } from "next/navigation";
+
+const axios = require("axios").default;
+
+async function sendExpressionGetQuestion(value, score, changeWindow) {
+  var level;
+  if (score == 30) level = 5;
+  else level = Math.floor(score / 6) + 1;
+  await axios
+    .post("http://localhost:8000/question_generation", {
+      expression: value,
+      level: level,
+    })
+    .then((response) => {
+      changeWindow(response.data);
+    });
+}
 
 export default function InputView() {
+  const [value, setValue] = useState("");
+  const [score] = useRecoilState(testScore);
+  const [expression, setExpression] = useRecoilState(expressionState);
+  const [question, setQuestion] = useRecoilState(questionState);
+
+  const router = useRouter();
+
+  function changeWindow(data) {
+    setExpression(value);
+    setQuestion(data);
+    router.push("/conversation");
+  }
+
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-cyan-500 to-blue-300">
       <Navigation />
@@ -28,6 +61,8 @@ export default function InputView() {
           </div>
           <Input
             className="w-56 m-4"
+            value={value}
+            onValueChange={setValue}
             classNames={{
               label: "text-black/50 dark:text-white/90",
               input: [
@@ -53,8 +88,9 @@ export default function InputView() {
           />
           <Button
             className="w-56 mx-4 bg-background/70 backdrop-saturate-150"
-            as={Link}
-            href="/conversation"
+            onClick={() => {
+              sendExpressionGetQuestion(value, score, changeWindow);
+            }}
           >
             학습 시작
           </Button>
