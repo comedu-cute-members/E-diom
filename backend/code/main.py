@@ -51,8 +51,6 @@ def upload_to_bucket(audio_name):
 
 # Speech to text 후 script.txt(전체 대본)와 data.csv(단어별 시작시간, 끝시간) 생성
 def recognize_speech(file_path: str) -> speech.RecognizeResponse:
-    print("re")
-    
     f = open("script.txt","w+")
 
     client = speech.SpeechClient()
