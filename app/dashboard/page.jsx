@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import {
+  testSumState,
   testExpressionState,
   testGrammarState,
   testSubjectState,
@@ -14,6 +15,7 @@ import {
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 function ChartArea() {
+  const [sum] = useRecoilState(testSumState);
   const [expression, setExpression] = useRecoilState(testExpressionState);
   const [grammar, setGrammar] = useRecoilState(testGrammarState);
   const [subject, setSubject] = useRecoilState(testSubjectState);
@@ -45,21 +47,6 @@ function ChartArea() {
       data: use,
     },
   ];
-
-  var maxIdx = 0;
-  var minIdx = 0;
-  for (var i = 1; i < expression.length; i++) {
-    if (
-      grammar[i] + subject[i] + use[i] >
-      grammar[maxIdx] + subject[maxIdx] + use[maxIdx]
-    )
-      maxIdx = i;
-    if (
-      grammar[i] + subject[i] + use[i] <
-      grammar[minIdx] + subject[minIdx] + use[minIdx]
-    )
-      minIdx = i;
-  }
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -102,10 +89,10 @@ function ChartArea() {
         <div className="flex-1 flex flex-col justify-center pl-5">
           <div>{"가장 잘한 표현은"}</div>
           <div className="mb-8 text-3xl text-emerald-300">
-            {expression[maxIdx]}
+            {sum.maxNode().data}
           </div>
           <div>{"가장 못한 표현은"}</div>
-          <div className="text-3xl text-sky-400">{expression[minIdx]}</div>
+          <div className="text-3xl text-sky-400">{sum.minNode().data}</div>
         </div>
       </div>
     </div>
