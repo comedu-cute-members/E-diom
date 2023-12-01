@@ -148,7 +148,7 @@ def brute_check(user_answer, keyword):
 
     return 0  
   
-class Answer(BaseModel):
+class TestAnswer(BaseModel):
     file: UploadFile
     index: int
 
@@ -156,20 +156,25 @@ class Gerneration(BaseModel):
     expression: str
     level: int
 
+class MainAnswer(BaseModel):
+    file: UploadFile
+    expession: str
+    index: int
+
 @app.post("/test")
-def test(answer: Answer):
+def test(test_answer: TestAnswer):
     try:
         score = 0
 
         question_list = ['You are going to a job interview. What do you think is the most important thing to do?' , 'How do you think about living as a leopard?' , 'How did your parents play with you when you were six years old?' , 'Who is your favorite sports star, and what is his talent?' , 'Have you ever solved some questions even though you do not know the exact solving method?']
         keyword_list = ['should' , 'prefer', 'used to' , 'good at', 'somehow']
 
-        audio_file = answer.file.filename
-        save_uploaded_file(answer.file, audio_file)
+        audio_file = test_answer.file.filename
+        save_uploaded_file(test_answer.file, audio_file)
         upload_to_bucket(audio_file)
         text = recognize_speech(audio_file)
 
-        sentence = f"‘{question_list[answer.index]}’ 라는 질문에 대해 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 6점으로 평가해줘. 1)‘응답자의 의견이 반영되어있는가?’ (2점) , 2)‘문장에 문법적인 오류가 없는가? (1점) , 3)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (3점). 이때, 출력 결과의 형식은 '항목: 점수'로 해줘"
+        sentence = f"‘{question_list[test_answer.index]}’ 라는 질문에 대해 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 6점으로 평가해줘. 1)‘응답자의 의견이 반영되어있는가?’ (2점) , 2)‘문장에 문법적인 오류가 없는가? (1점) , 3)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (3점). 이때, 출력 결과의 형식은 '항목: 점수'로 해줘"
 
         answer = bard.get_answer(sentence)['content']
 
@@ -177,7 +182,7 @@ def test(answer: Answer):
 
         max_v = max(score_list)
 
-        check = brute_check(text, keyword_list[answer.index])
+        check = brute_check(text, keyword_list[test_answer.index])
         score = max_v + check
 
         return JSONResponse(content={"총점": score})
@@ -206,10 +211,10 @@ def question_generation(generation: Gerneration):
                                    "question3": questions[2]})
 
 @app.post("/main_question")
-def main_question(answer: Answer):
+def main_question(main_answer: MainAnswer):
     try:
-        audio_file = answer.file.filename
-        save_uploaded_file(answer.file, audio_file)
+        audio_file = main_answer.file.filename
+        save_uploaded_file(main_answer.file, audio_file)
         upload_to_bucket(audio_file)
         text = recognize_speech(audio_file)
 
@@ -217,14 +222,15 @@ def main_question(answer: Answer):
         questions = list(csv.reader(f))[0]
         f.close()
 
-        input = f"‘{questions[answer.index]}’ 라는 질문에 대한 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 10점으로 평가해줘. 1)‘문장에 문법적인 오류가 없는가? (10점), 2)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (10점). 이때, 출력 결과의 형식은 '기준 항목의 번호: 점수'와 '총점: 점수 합계'로 해줘. 이때, 총점은 마지막에 출력해줘"
+        input = f"‘{questions[main_answer.index]}’ 라는 질문에 대한 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 10점으로 평가해줘. 1)‘문장에 문법적인 오류가 없는가? (10점), 2)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (10점). 이때, 출력 결과의 형식은 '기준 항목의 번호: 점수'와 '총점: 점수 합계'로 해줘. 이때, 총점은 마지막에 출력해줘"
 
         answer = bard.get_answer(input)['content']
-        print(answer)
         scores = extract_score(answer)
-        print(scores)
+
+        usage = brute_check(text, main_answer.expession)
 
         return JSONResponse(content= {
+        "표현의 사용 여부": usage,
         "문법적인 오류": scores[0],
         "질문의 주제 적합성": scores[1],  
         "총점": scores[2]                   
