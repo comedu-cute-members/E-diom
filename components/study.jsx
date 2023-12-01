@@ -49,16 +49,9 @@ function Test(props) {
           variant="flat"
           onClick={(e) => {
             e.preventDefault();
-            if (cnt == 0) {
-              setCnt(1);
-            } else if (cnt == 1) {
-              if (test < props.maxTest) {
-                setTest(test + 1);
-                console.log(test);
-              }
-              setCnt(0);
-            }
-            if (test >= props.maxTest) {
+            setTest(test + 1);
+
+            if (test >= props.maxTest - 1) {
               console.log(test);
               setIsDisabled(false);
             }
