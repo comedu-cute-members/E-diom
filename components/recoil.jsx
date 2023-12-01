@@ -1,4 +1,30 @@
 import { atom } from "recoil";
+import AVLTree from "avl";
+
+const tree = new AVLTree();
+tree.load(
+  [11, 18, 18, 18, 19, 22, 21],
+  [
+    "should",
+    "so...that",
+    "too...to",
+    "enough to",
+    "get rid of",
+    "prefer A to B",
+    "apply to",
+  ],
+  true
+);
+
+export const testSumState = atom({
+  key: "testSumState",
+  default: tree,
+});
+
+export const testScore = atom({
+  key: "testScore",
+  default: 18.14,
+});
 
 export const testExpressionState = atom({
   key: "testExpressionState",
@@ -7,9 +33,9 @@ export const testExpressionState = atom({
     "so...that",
     "too...to",
     "enough to",
-    "should",
+    "get rid of",
     "prefer A to B",
-    "should",
+    "apply to",
   ],
 });
 
@@ -20,7 +46,7 @@ export const testGrammarState = atom({
 
 export const testSubjectState = atom({
   key: "testSubjectState",
-  default: [7, 4, 2, 9, 7, 7, 5],
+  default: [7, 4, 2, 9, 8, 7, 5],
 });
 
 export const testUseState = atom({
