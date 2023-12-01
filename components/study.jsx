@@ -1,11 +1,11 @@
 "use client";
 import { Spacer, Input, Link, Button } from "@nextui-org/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AudioRecord from "../components/audioRecord"
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 import {Tooltip} from "@nextui-org/react";
-import { useTypewriter } from 'react-simple-typewriter'
-
+import { usePathname, useRouter } from 'next/navigation';
+import axios from 'axios';
 
 
 function Test(props){
@@ -17,6 +17,11 @@ function Test(props){
   const [cnt, setCnt] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
   const [test, setTest] = useState(1);
+
+  const pathname = usePathname();
+
+  const router = useRouter();
+  //console.log(router.query.data);
 
   const clickHandler = ({ item }) =>{
     //navigate('/search', {state: {item},});
@@ -33,6 +38,7 @@ function Test(props){
     linkInfo = "/input"
   }
   else{
+    
     linkInfo = "/dashboard"
   }
 
@@ -100,7 +106,7 @@ function Test(props){
       <Spacer y={70}/>
       <div className="flex flex-row justify-center items-center">
         <Spacer x={12} />
-        <AudioRecord/>
+        <AudioRecord index={test} isTest={props.maxTest}/>
         <Spacer x={3} />
         <Input
         isReadOnly

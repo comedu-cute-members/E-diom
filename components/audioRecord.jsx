@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
 import { FaMicrophone } from "react-icons/fa";
 import { BsSoundwave } from "react-icons/bs";
+import axios from 'axios';
 
-function AudioRecord() {
+function AudioRecord(props) {
   const [stream, setStream] = useState();
   const [media, setMedia] = useState();
   const [onRec, setOnRec] = useState(true);
@@ -82,13 +83,35 @@ function AudioRecord() {
     if (audioUrl) {
       URL.createObjectURL(audioUrl); // 출력된 링크에서 녹음된 오디오 확인 가능
     }
+
+    const uploadFileToServer = (file, index) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('index', index);
+        if(!isTest){
+            formData.append('express',);
+        }
+
+        axios.post('localhost:8000/test', formData, {
+            headers:{
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+        .then(response => {
+            console.log(response.data.message);
+        })
+        .catch(error => {
+            console.error('전송 중 오류 발생:', error);
+        })
+    }
     
     // File 생성자를 사용해 파일로 변환
-    const sound = new File([audioUrl], "soundBlob", {
+    const sound = new File([audioUrl], `${props.index}.wav`, {
       lastModified: new Date().getTime(),
-      type: "audio",
-    });
-  	
+      type: "audio/wav",});
+    uploadFileToServer(sound, props.index, props.isTest);
+
+    
     setDisabled(false);
     console.log(sound); // File 정보 출력
   };
