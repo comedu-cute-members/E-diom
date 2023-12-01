@@ -18,10 +18,16 @@ function Test(props){
   const [isDisabled, setIsDisabled] = useState(true);
   const [test, setTest] = useState(1);
 
-  const pathname = usePathname();
+  useEffect(()=>{
+    fetch("http://localhost:8000/main_question")
+      .then(res =>{
+        return res.json();
+      })
+      .then(data => {
+        setFeedback(data);
+      })
+  })
 
-  const router = useRouter();
-  //console.log(router.query.data);
 
   const clickHandler = ({ item }) =>{
     //navigate('/search', {state: {item},});
@@ -35,6 +41,10 @@ function Test(props){
 
   var linkInfo;
   if(props.maxTest == 5){
+    const pathname = usePathname();
+    const router = useRouter();
+    console.log(router.query.data);
+    
     linkInfo = "/input"
   }
   else{
@@ -106,7 +116,7 @@ function Test(props){
       <Spacer y={70}/>
       <div className="flex flex-row justify-center items-center">
         <Spacer x={12} />
-        <AudioRecord index={test} isTest={props.maxTest}/>
+        <AudioRecord index={test} isTest={props.maxTest} expression={router.query.data}/>
         <Spacer x={3} />
         <Input
         isReadOnly

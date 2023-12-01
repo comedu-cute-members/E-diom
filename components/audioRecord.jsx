@@ -89,7 +89,7 @@ function AudioRecord(props) {
         formData.append('file', file);
         formData.append('index', index);
         if(!isTest){
-            formData.append('express',);
+            formData.append('express', props.expression);
         }
 
         axios.post('localhost:8000/test', formData, {
