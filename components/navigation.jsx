@@ -19,7 +19,7 @@ const Navigation = ({ breadcrumbs }) => {
       </NavbarBrand>
       <NavbarContent justify="center">
         <NavbarItem>
-          <div>메뉴 3개 들어갈 곳</div>
+          <Link></Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent className="shrink w-100" justify="end">
