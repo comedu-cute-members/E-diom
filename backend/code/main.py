@@ -15,6 +15,7 @@ import pandas as pd
 from collections import Counter
 from datetime import datetime
 from pydub import AudioSegment
+from pydantic import BaseModel
 
 token = "dwjnCrLckuzrNoHp-V1Cq1OJYoS970D0VsesgHtJ-sMDMIhcRPC-QsIbKfyjUerK2b6qNg."
 bard = Bard(token=token)
@@ -146,22 +147,29 @@ def brute_check(user_answer, keyword):
         return 4
 
     return 0  
+  
+class Answer(BaseModel):
+    file: UploadFile
+    index: int
+
+class Gerneration(BaseModel):
+    expression: str
+    level: int
 
 @app.post("/test")
-def test(file: UploadFile, request: Request):
+def test(answer: Answer):
     try:
-        index = 0
         score = 0
 
         question_list = ['You are going to a job interview. What do you think is the most important thing to do?' , 'How do you think about living as a leopard?' , 'How did your parents play with you when you were six years old?' , 'Who is your favorite sports star, and what is his talent?' , 'Have you ever solved some questions even though you do not know the exact solving method?']
         keyword_list = ['should' , 'prefer', 'used to' , 'good at', 'somehow']
 
-        audio_file = file.filename
-        save_uploaded_file(file, audio_file)
+        audio_file = answer.file.filename
+        save_uploaded_file(answer.file, audio_file)
         upload_to_bucket(audio_file)
         text = recognize_speech(audio_file)
 
-        sentence = f"‘{question_list[index]}’ 라는 질문에 대해 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 6점으로 평가해줘. 1)‘응답자의 의견이 반영되어있는가?’ (2점) , 2)‘문장에 문법적인 오류가 없는가? (1점) , 3)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (3점). 이때, 출력 결과의 형식은 '항목: 점수'로 해줘"
+        sentence = f"‘{question_list[answer.index]}’ 라는 질문에 대해 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 6점으로 평가해줘. 1)‘응답자의 의견이 반영되어있는가?’ (2점) , 2)‘문장에 문법적인 오류가 없는가? (1점) , 3)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (3점). 이때, 출력 결과의 형식은 '항목: 점수'로 해줘"
 
         answer = bard.get_answer(sentence)['content']
 
@@ -169,7 +177,7 @@ def test(file: UploadFile, request: Request):
 
         max_v = max(score_list)
 
-        check = brute_check(text, keyword_list[index])
+        check = brute_check(text, keyword_list[answer.index])
         score = max_v + check
 
         return JSONResponse(content={"총점": score})
@@ -178,19 +186,16 @@ def test(file: UploadFile, request: Request):
         return {"Error in test": str(e)} 
 
 @app.post("/question_generation")
-def question_generation(request: Request):
+def question_generation(generation: Gerneration):
     f = open("questions.csv", "w+", newline='')
     csv_writer = csv.writer(f)
-    expression = "should"
     questions = []
     
-    question_for_Q = f"내가 {expression}라는 표현을 사용해서 대답할 수 있는 영어 질문을 해당 질문이 응답자의 생각을 요구하는 것에 따라 5개의 난이도로 나누어서, 난이도 1에 해당하는 질문을 3개 해줘. 이때, 하나의 질문을 출력할 때의 형식은 '질문 번호: 질문' 으로 해줘"
+    question_for_Q = f"내가 {answer.expression}라는 표현을 사용해서 대답할 수 있는 영어 질문을 해당 질문이 응답자의 생각을 요구하는 것에 따라 5개의 난이도로 나누어서, 난이도 {answer.level}에 해당하는 질문을 3개 해줘. 이때, 하나의 질문을 출력할 때의 형식은 '질문 번호: 질문' 으로 해줘"
     answer = bard.get_answer(question_for_Q)['content']
     # answer = "질문 1: Should you learn a new language if you are planning to travel to a foreign country? 질문 2: Should you save money for the future or spend it on experiences? 질문 3: Should you follow your dreams or be practical? 이 질문들은 모두 응답자의 생각을 요구하는 질문으로, 난이도 3에 해당합니다."
 
     questions = extract_question(answer)
-    print(print(answer))
-    print(questions)
     
     csv_writer.writerow(questions)
 
@@ -201,10 +206,10 @@ def question_generation(request: Request):
                                    "question3": questions[2]})
 
 @app.post("/main_question")
-def main_question(file: UploadFile, request: Request):
+def main_question(answer: Answer):
     try:
-        audio_file = file.filename
-        save_uploaded_file(file, audio_file)
+        audio_file = answer.file.filename
+        save_uploaded_file(answer.file, audio_file)
         upload_to_bucket(audio_file)
         text = recognize_speech(audio_file)
 
@@ -212,10 +217,7 @@ def main_question(file: UploadFile, request: Request):
         questions = list(csv.reader(f))[0]
         f.close()
 
-        expression = "should"
-        index = 0
-
-        input = f"‘{questions[0]}’ 라는 질문에 대한 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 10점으로 평가해줘. 1)‘문장에 문법적인 오류가 없는가? (10점), 2)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (10점). 이때, 출력 결과의 형식은 '기준 항목의 번호: 점수'와 '총점: 점수 합계'로 해줘. 이때, 총점은 마지막에 출력해줘"
+        input = f"‘{questions[answer.index]}’ 라는 질문에 대한 '{text}' 라는 응답을 다음과 같은 기준으로 0점에서 10점으로 평가해줘. 1)‘문장에 문법적인 오류가 없는가? (10점), 2)‘질문의 주제에 벗어나지 않는 올바른 응답인가?’ (10점). 이때, 출력 결과의 형식은 '기준 항목의 번호: 점수'와 '총점: 점수 합계'로 해줘. 이때, 총점은 마지막에 출력해줘"
 
         answer = bard.get_answer(input)['content']
         print(answer)
@@ -223,7 +225,6 @@ def main_question(file: UploadFile, request: Request):
         print(scores)
 
         return JSONResponse(content= {
-        "표현": expression,
         "문법적인 오류": scores[0],
         "질문의 주제 적합성": scores[1],  
         "총점": scores[2]                   
