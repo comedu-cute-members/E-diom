@@ -3,10 +3,22 @@
 import Navigation from "../../components/navigation";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import {
+  testExpressionState,
+  testGrammarState,
+  testSubjectState,
+  testUseState,
+} from "../../components/recoil";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 function ChartArea() {
+  const [expression, setExpression] = useRecoilState(testExpressionState);
+  const [grammar, setGrammar] = useRecoilState(testGrammarState);
+  const [subject, setSubject] = useRecoilState(testSubjectState);
+  const [use, setUse] = useRecoilState(testUseState);
+
   var colors = ["#6ee7b7", "#fbbf24", "#38bdf8"];
 
   var barOptions = {
@@ -15,30 +27,22 @@ function ChartArea() {
     colors: colors,
     yaxis: { min: 0, max: 10, tickAmount: 5 },
     xaxis: {
-      categories: [
-        "should",
-        "so...that",
-        "too...to",
-        "enough to",
-        "should",
-        "prefer A to B",
-        "should",
-      ],
+      categories: expression,
     },
   };
 
   var barSeries = [
     {
       name: "문법",
-      data: [3, 4, 6, 8, 10, 5, 6],
+      data: grammar,
     },
     {
       name: "주제적합성",
-      data: [7, 4, 2, 9, 7, 7, 5],
+      data: subject,
     },
     {
       name: "표현사용여부",
-      data: [3, 4, 6, 8, 10, 5, 6],
+      data: use,
     },
   ];
 
