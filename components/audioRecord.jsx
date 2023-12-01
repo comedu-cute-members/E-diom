@@ -91,6 +91,7 @@ function AudioRecord() {
     console.log(sound); // File 정보 출력
   };
 
+  // 테스트용
   const play = () => { 
     const audio = new Audio(URL.createObjectURL(audioUrl)); // 😀😀😀
     audio.loop = false;
@@ -101,7 +102,7 @@ function AudioRecord() {
   return (
     <>
       <button onClick={onRec ? onRecAudio : offRecAudio}>
-        <FaMicrophone />
+        <FaMicrophone size={24}/>
       </button>
       <p></p>
       {/* <button onClick={play} disabled={disabled}>재생</button> */}
