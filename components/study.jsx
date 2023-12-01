@@ -1,11 +1,10 @@
 "use client";
 import { Spacer, Input, Link, Button } from "@nextui-org/react";
-import { FaMicrophone } from "react-icons/fa";
 import { useState } from "react";
 import AudioRecord from "../components/audioRecord"
 import { IoMdArrowDroprightCircle } from "react-icons/io";
 import {Tooltip} from "@nextui-org/react";
-import ButtonDirector from "./buttonDirector";
+import { useTypewriter } from 'react-simple-typewriter'
 
 
 
@@ -30,6 +29,12 @@ function Test(props){
   };
 
   var linkInfo;
+  if(props.maxTest == 5){
+    linkInfo = "/input"
+  }
+  else{
+    linkInfo = "/dashboard"
+  }
 
   let content = null;
   if(isDisabled){
@@ -37,7 +42,7 @@ function Test(props){
     <Button 
     as={Link} href={linkInfo}
     className="w-[40px] h-[50px]"
-    color="primary"
+    color="transparent"
     variant="flat"
     onClick={e => {
       e.preventDefault();
@@ -58,7 +63,6 @@ function Test(props){
         setIsDisabled(false);
       }
     }}
-    
     >
       <IoMdArrowDroprightCircle size={40}/>
     </Button>
@@ -66,15 +70,20 @@ function Test(props){
   }
   else{
     content = <Button as={Link} href={linkInfo} isDisabled={isDisabled}
-    color="primary" className="w-[40px] h-[50px]"
+    color="transparent" className="w-[40px] h-[50px]"
     >
         Next!
     </Button>
   }
+  
 //"It is Over! You can't stop me lovin ma self! It is Over! You can't stop me lovin ma self!"
   
   return (
     <>
+      {/* <h1>
+        i am
+        <span>{text}</span>
+      </h1> */}
       <Spacer y={100} />
       <div className="flex align-center justify-center">
         <h1 className="text-3xl test-slate-500 hover:text-blue-600">{question}</h1>
@@ -92,7 +101,7 @@ function Test(props){
       <div className="flex flex-row justify-center items-center">
         <Spacer x={12} />
         <AudioRecord/>
-        <Spacer x={1} />
+        <Spacer x={3} />
         <Input
         isReadOnly
         placeholder="Answer!"
@@ -123,7 +132,7 @@ function Test(props){
         >
         <p className="text-default-500 text-small">Input answer: {answer}</p>
         </Input>
-        <Spacer x={1} />
+        <Spacer x={-3} />
         {content}        
       </div>
 

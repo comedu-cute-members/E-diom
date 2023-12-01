@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { FaMicrophone } from "react-icons/fa";
+import { BsSoundwave } from "react-icons/bs";
 
 function AudioRecord() {
   const [stream, setStream] = useState();
@@ -36,6 +37,7 @@ function AudioRecord() {
       makeSound(stream);
 
       analyser.onaudioprocess = function (e) {
+
         // 3분(180초) 지나면 자동으로 음성 저장 및 녹음 중지
         if (e.playbackTime > 10) {
           stream.getAudioTracks().forEach(function (track) {
@@ -99,10 +101,18 @@ function AudioRecord() {
     audio.play();
   };
 
+  let content = null;
+  if(!disabled){
+    content = <FaMicrophone size={24}/>
+  }
+  else{
+    content = <BsSoundwave size={24}/>
+  }
+
   return (
     <>
       <button onClick={onRec ? onRecAudio : offRecAudio}>
-        <FaMicrophone size={24}/>
+        {content}
       </button>
       <p></p>
       {/* <button onClick={play} disabled={disabled}>재생</button> */}
