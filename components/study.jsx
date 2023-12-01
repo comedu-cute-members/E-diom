@@ -12,7 +12,6 @@ import { expressionState, questionState } from "@/components/recoil";
 function Test(props) {
   // input 페이지에서 학습할 단어 입력하고 페이지 넘기면 이곳으로 질문 3개가 넘어옴
   // 임의로 지정함
-  const [feedback, setFeedback] = useState("");
   const [answer, setAnswer] = useState("Answer~");
   const [cnt, setCnt] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
@@ -20,15 +19,6 @@ function Test(props) {
   const [expression] = useRecoilState(expressionState);
   const [question, setQuestion] = useRecoilState(questionState);
 
-  useEffect(() => {
-    fetch("http://localhost:8000/main_question")
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setFeedback(data);
-      });
-  });
 
   const clickHandler = ({ item }) => {
     //navigate('/search', {state: {item},});
@@ -61,12 +51,10 @@ function Test(props) {
             e.preventDefault();
             if (cnt == 0) {
               setCnt(1);
-              setFeedback("I'm so tired. What should I do?");
             } else if (cnt == 1) {
               if (test < props.maxTest) {
                 setTest(test + 1);
                 console.log(test);
-                setFeedback("");
               }
               setCnt(0);
             }
@@ -108,8 +96,7 @@ function Test(props) {
       <Spacer y={50} />
 
       <div className="flex text-center align-center justify-center items-center">
-        <div className="grid place-items-center text-lg w-[400px] h-[180px] border-4">
-          {feedback}
+        <div className="grid place-items-center text-lg w-[400px] h-[180px]">
         </div>
       </div>
 
