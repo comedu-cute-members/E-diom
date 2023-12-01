@@ -8,7 +8,6 @@ import {
 } from "@nextui-org/react";
 import { BsGithub } from "react-icons/bs";
 import { GiFishing } from "react-icons/gi";
-import { ThemeSwitcher } from "./themeSwitcher";
 
 const Navigation = ({ breadcrumbs }) => {
   return (
@@ -17,15 +16,24 @@ const Navigation = ({ breadcrumbs }) => {
         <GiFishing className="mx-2 fill-blue-400" size="30" />
         <div className="font-bold text-blue-400">Word Fisher</div>
       </NavbarBrand>
-      <NavbarContent justify="center">
+      <NavbarContent className="gap-20" justify="center">
         <NavbarItem>
-          <Link></Link>
+          <Link href="/" color="foreground">
+            진단평가
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/input" color="foreground">
+            대화 학습
+          </Link>
+        </NavbarItem>
+        <NavbarItem>
+          <Link href="/dashboard" color="foreground">
+            대시보드
+          </Link>
         </NavbarItem>
       </NavbarContent>
       <NavbarContent className="shrink w-100" justify="end">
-        <NavbarItem>
-          <ThemeSwitcher />
-        </NavbarItem>
         <NavbarItem>
           <Button
             as={Link}
