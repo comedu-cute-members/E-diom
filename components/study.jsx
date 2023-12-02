@@ -12,13 +12,12 @@ import { expressionState, questionState } from "@/components/recoil";
 function Test(props) {
   // input 페이지에서 학습할 단어 입력하고 페이지 넘기면 이곳으로 질문 3개가 넘어옴
   // 임의로 지정함
-  const [answer, setAnswer] = useState("Answer~");
+  const [answer, setAnswer] = useState("질문에 대한 답을 말하세요!");
   const [cnt, setCnt] = useState(0);
   const [isDisabled, setIsDisabled] = useState(true);
   const [test, setTest] = useState(1);
   const [expression] = useRecoilState(expressionState);
   const [question, setQuestion] = useRecoilState(questionState);
-
 
   const clickHandler = ({ item }) => {
     //navigate('/search', {state: {item},});
@@ -89,8 +88,7 @@ function Test(props) {
       <Spacer y={50} />
 
       <div className="flex text-center align-center justify-center items-center">
-        <div className="grid place-items-center text-lg w-[400px] h-[180px]">
-        </div>
+        <div className="grid place-items-center text-lg w-[400px] h-[180px]"></div>
       </div>
 
       <Spacer y={70} />
@@ -100,12 +98,13 @@ function Test(props) {
           index={test}
           isTest={props.maxTest}
           expression={expression}
+          setAnswer={setAnswer}
         />
         <Spacer x={3} />
         <Input
           isReadOnly
           placeholder="Answer!"
-          answer={answer}
+          value={answer}
           onAnswerChange={setAnswer}
           className="w-[400px]"
           classNames={{
@@ -129,9 +128,7 @@ function Test(props) {
               "!cursor-text",
             ],
           }}
-        >
-          <p className="text-default-500 text-small">Input answer: {answer}</p>
-        </Input>
+        ></Input>
         <Spacer x={-3} />
         {content}
       </div>

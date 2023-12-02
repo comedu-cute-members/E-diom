@@ -18,7 +18,7 @@ from pydub import AudioSegment
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-token = "dwjnClsIsgydZO4lR4xG3FI-ZWsLzSOti0H7f837kz3pw3hFTQMleUzvNsIqmIHHxcAlMA."
+token = "dwjnCqtUgvXcNe8Nvjl4HhqtDKRvZV2LBGe9__FoNBOI6vtSv4B9PEtyGpkvIahhtxNgtA."
 bard = Bard(token=token)
 
 # 구글 서비스 계정 인증을 위한 환경변수 설정
@@ -198,7 +198,8 @@ def test(test_answer: TestAnswer):
         check = brute_check(text, keyword_list[test_answer.index])
         score = max_v + check
 
-        return JSONResponse(content={"총점": score})
+        return JSONResponse(content={"총점": score,
+                                     "text": text})
     
     except Exception as e:
         return {"Error in test": str(e)} 
@@ -243,7 +244,8 @@ def main_question(main_answer: MainAnswer):
         "표현의 사용 여부": usage,
         "문법적인 오류": scores[0],
         "질문의 주제 적합성": scores[1],  
-        "총점": scores[2]                   
+        "총점": scores[2],
+        "text": text                   
                               })
     except Exception as e:
         return {"Error in main_question": str(e)}    

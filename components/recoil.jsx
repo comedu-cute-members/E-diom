@@ -3,7 +3,7 @@ import AVLTree from "avl";
 
 const tree = new AVLTree();
 tree.load(
-  [11, 18, 18, 18, 19, 22, 21],
+  [11, 18, 18, 18, 19, 22, 0],
   [
     "should",
     "so...that",
@@ -57,15 +57,15 @@ export const testExpressionState = atom({
 
 export const testGrammarState = atom({
   key: "testGrammarState",
-  default: [3, 4, 6, 8, 10, 5, 6],
+  default: [3, 4, 6, 8, 10, 5, 0],
 });
 
 export const testSubjectState = atom({
   key: "testSubjectState",
-  default: [7, 4, 2, 9, 8, 7, 5],
+  default: [7, 4, 2, 9, 8, 7, 1],
 });
 
 export const testUseState = atom({
   key: "testUseState",
-  default: [1, 10, 10, 1, 1, 10, 10],
+  default: [0, 10, 10, 0, 0, 10, 0],
 });

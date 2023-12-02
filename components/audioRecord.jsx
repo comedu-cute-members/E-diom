@@ -82,44 +82,44 @@ function AudioRecord(props) {
       URL.createObjectURL(audioUrl); // 출력된 링크에서 녹음된 오디오 확인 가능
     }
 
-    const uploadFileToServer = (file, index) => {
+    async function uploadFileToServer(file, index) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("index", index);
       if (!props.isTest) {
         formData.append("express", props.expression);
-        axios
-          .post("localhost:8000/main_question", formData, {
+        await axios
+          .post("http://localhost:8000/main_question", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
           .then((response) => {
-            console.log(response.data.message);
+            props.setAnswer(response.text);
           })
           .catch((error) => {
             console.error("전송 중 오류 발생:", error);
           });
       } else {
-        axios
-          .post("localhost:8000/test", formData, {
+        await axios
+          .post("http://localhost:8000/test", formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
           })
           .then((response) => {
-            console.log(response.data.message);
+            props.setAnswer(response.text);
           })
           .catch((error) => {
             console.error("전송 중 오류 발생:", error);
           });
       }
-    };
+    }
 
     // File 생성자를 사용해 파일로 변환
     const sound = new File([audioUrl], `${props.index}.wav`, {
-      lastModified: new Date().getTime(),
-      type: "audio/wav",
+      name: "name",
+      index: props.index,
     });
     uploadFileToServer(sound, props.index, props.isTest);
 

@@ -13,8 +13,7 @@ const Navigation = ({ breadcrumbs }) => {
   return (
     <Navbar isBordered classNames={{ wrapper: "max-w-[2000px] px-10" }}>
       <NavbarBrand>
-        <GiFishing className="mx-2 fill-blue-400" size="30" />
-        <div className="font-bold text-blue-400">Word Fisher</div>
+        <div className="font-bold text-blue-400">E:Diom</div>
       </NavbarBrand>
       <NavbarContent className="gap-20" justify="center">
         <NavbarItem>
