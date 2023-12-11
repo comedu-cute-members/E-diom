@@ -18,7 +18,7 @@ from pydub import AudioSegment
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
-token = "dwjnCqtUgvXcNe8Nvjl4HhqtDKRvZV2LBGe9__FoNBOI6vtSv4B9PEtyGpkvIahhtxNgtA."
+token = "dwjnCtS604W0kk7n4raYF_49S0LdyTrPClMVxYDE4ziN_sozj4p233BiaSF9pEifgX6tcw."
 bard = Bard(token=token)
 
 # 구글 서비스 계정 인증을 위한 환경변수 설정

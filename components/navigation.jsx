@@ -7,7 +7,6 @@ import {
   Button,
 } from "@nextui-org/react";
 import { BsGithub } from "react-icons/bs";
-import { GiFishing } from "react-icons/gi";
 
 const Navigation = ({ breadcrumbs }) => {
   return (
@@ -37,7 +36,7 @@ const Navigation = ({ breadcrumbs }) => {
           <Button
             as={Link}
             className="bg-zinc-600 dark:bg-zinc-800 text-zinc-200"
-            href="https://github.com/comedu-cute-members/WordFisher"
+            href="https://github.com/comedu-cute-members/hs-sikyejoe"
             variant="flat"
             startContent={<BsGithub size="20" />}
           >
